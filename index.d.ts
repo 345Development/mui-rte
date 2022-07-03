@@ -84,7 +84,9 @@ export declare type TAutocompleteStrategy = {
     triggerChar: string;
     items: TAutocompleteItem[];
     insertSpaceAfter?: boolean;
+    keepTriggerChar?: boolean;
     atomicBlockName?: string;
+    itemsCallback?: (searchTerm: string) => TAutocompleteItem[];
 };
 export declare type TAutocomplete = {
     strategies: TAutocompleteStrategy[];

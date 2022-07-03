@@ -31,7 +31,9 @@ export type TAutocompleteStrategy = {
     triggerChar: string
     items: TAutocompleteItem[]
     insertSpaceAfter?: boolean
+    keepTriggerChar?: boolean
     atomicBlockName?: string
+    itemsCallback?: (searchTerm: string) => TAutocompleteItem[]
 }
 
 export type TAutocomplete = {
@@ -201,7 +203,7 @@ const styleRenderMap: DraftStyleMap = {
 }
 
 const { hasCommandModifier } = KeyBindingUtil
-const autocompleteMinSearchCharCount = 2
+const autocompleteMinSearchCharCount = 1
 const lineHeight = 26
 const defaultInlineToolbarControls = ["bold", "italic", "underline", "clear"]
 
@@ -424,6 +426,10 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
     }
 
     const insertAutocompleteSuggestionAsText = (selection: SelectionState, value: string) => {
+        if (autocompleteRef.current!.keepTriggerChar){
+            value = autocompleteRef.current!.triggerChar + value
+        }
+        
         const currentContentState = editorState.getCurrentContent()
         const entityKey = currentContentState.createEntity("AC_ITEM", 'IMMUTABLE').getLastCreatedEntityKey()
         const contentState = Modifier.replaceText(editorStateRef.current!.getCurrentContent(),
@@ -472,6 +478,10 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
         if (searchTerm.length < autocompleteMinSearchCharCount) {
             return []
         }
+        if (autocompleteRef.current!.itemsCallback) {
+            return autocompleteRef.current!.itemsCallback(searchTerm)
+        }
+
         return autocompleteRef.current!.items
             .filter(item => (item.keys.filter(key => key.includes(searchTerm)).length > 0))
             .splice(0, autocompleteLimit)
@@ -1001,6 +1011,8 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
                     setSelectedIndex(limit - 1)
                 }
                 return "mui-autocomplete-navigate"
+            case "Tab":
+                return "mui-autocomplete-insert"
             case "Enter":
                 return "mui-autocomplete-insert"
             case "Escape":

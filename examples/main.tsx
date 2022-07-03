@@ -15,6 +15,7 @@ import AtomicCustomBlock from './atomic-custom-block'
 import KeyBindings from './key-bindings'
 import MaxLength from './max-length'
 import Autocomplete from './autocomplete'
+import Custom from './custom'
 import AutocompleteAtomic from './autocomplete-atomic'
 import AsyncImageUpload from './async-image-upload'
 import AsyncAtomicCustomBlock from './async-atomic-custom-block'
@@ -24,7 +25,7 @@ const defaultTheme: Theme = createTheme({})
 
 const App = () => {
 
-    const [sample, setSample] = useState(<Basic />)
+    const [sample, setSample] = useState(<Custom />)
 
     useEffect(() => {
         console.log(`Loaded ${sample.type.name} example`)
