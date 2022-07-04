@@ -74,6 +74,7 @@ const AutocompleteAtomic = () => {
             autocomplete={{
                 strategies: [
                     {
+                        type: "CITY",
                         items: cities,
                         triggerChar: "/",
                         atomicBlockName: "my-city"

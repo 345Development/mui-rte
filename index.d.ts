@@ -81,6 +81,7 @@ export declare type TDecorator = {
     regex: RegExp;
 };
 export declare type TAutocompleteStrategy = {
+    type: string;
     triggerChar: string;
     items: TAutocompleteItem[];
     insertSpaceAfter?: boolean;

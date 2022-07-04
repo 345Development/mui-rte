@@ -28,6 +28,7 @@ export type TDecorator = {
 }
 
 export type TAutocompleteStrategy = {
+    type: string
     triggerChar: string
     items: TAutocompleteItem[]
     insertSpaceAfter?: boolean
@@ -400,7 +401,7 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
         const top = selectionRect ? selectionRect.top : editorRect.top + (lineHeight * line)
         const left = selectionRect?.left ? selectionRect.left : editorRect.left
         const position = {
-            top: editor.offsetTop + (top - editorRect.top) + lineHeight - editorScrollRef?.current?.scrollTop || 0,
+            top: editor.offsetTop + (top - editorRect.top) - editorScrollRef?.current?.scrollTop || 0,
             left: editor.offsetLeft + (left - editorRect.left)
         }
         if (!autocompleteSelectionStateRef.current) {
@@ -426,13 +427,18 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
         handleChange(withAtomicBlock)
     }
 
-    const insertAutocompleteSuggestionAsText = (selection: SelectionState, value: string) => {
+    const insertAutocompleteSuggestionAsText = (selection: SelectionState, item: any) => {
+        let value = item.value;
         if (autocompleteRef.current!.keepTriggerChar){
             value = autocompleteRef.current!.triggerChar + value
         }
         
         const currentContentState = editorState.getCurrentContent()
-        const entityKey = currentContentState.createEntity("AC_ITEM", 'IMMUTABLE').getLastCreatedEntityKey()
+        const entityKey = currentContentState.createEntity(
+            autocompleteRef.current!.type ?? "AC_ITEM", 
+            'IMMUTABLE',
+            item.data || {}
+        ).getLastCreatedEntityKey()
         const contentState = Modifier.replaceText(editorStateRef.current!.getCurrentContent(),
             selection,
             value,
@@ -463,7 +469,7 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
                 const name = autocompleteRef.current!.atomicBlockName
                 insertAutocompleteSuggestionAsAtomicBlock(name, newSelection as SelectionState, item.value)
             } else {
-                insertAutocompleteSuggestionAsText(newSelection as SelectionState, item.value)
+                insertAutocompleteSuggestionAsText(newSelection as SelectionState, item)
             }
         }
         handleAutocompleteClosed()
@@ -1101,6 +1107,7 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
                         items={getAutocompleteItems()}
                         top={autocompletePositionRef.current!.top}
                         left={autocompletePositionRef.current!.left}
+                        lineHeight={lineHeight}
                         onClick={handleAutocompleteSelected}
                         selectedIndex={selectedIndex}
                     />

@@ -108,14 +108,17 @@ const Custom = () => {
             autocomplete={{
                 strategies: [
                     {
+                        type: "EMOJI",
                         items: emojis,
                         triggerChar: ":"
                     },
                     {
+                        type: "CITY",
                         items: cities,
                         triggerChar: "/"
                     },
                     {
+                        type: "USER",
                         items: staff,
                         itemsCallback: StaffCallback,
                         triggerChar: "@",
