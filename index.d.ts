@@ -138,6 +138,7 @@ export declare type TMUIRichTextEditorProps = {
     keyCommands?: TKeyCommand[];
     maxLength?: number;
     autocomplete?: TAutocomplete;
+    parentContainer?: string;
     onSave?: (data: string) => void;
     onChange?: (state: EditorState) => void;
     onFocus?: () => void;

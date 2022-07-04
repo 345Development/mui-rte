@@ -15,6 +15,7 @@ interface TAutocompleteProps extends WithStyles<typeof styles> {
     left: number
     lineHeight: number
     selectedIndex: number
+    parentContainer?: string
     onClick: (selectedIndex: number) => void
 }
 
@@ -40,9 +41,20 @@ const Autocomplete: FunctionComponent<TAutocompleteProps> = (props) => {
         let el = document.getElementById("autocomplete-box")
         if (!el) return;
         var rect = el.getBoundingClientRect();
+
+        let containerEl = props?.parentContainer && document.getElementById(props.parentContainer)
+        var container = {bottom: 0, right: 0}
+        if (containerEl) {
+            container = containerEl.getBoundingClientRect();
+        } else {
+            container = {
+                bottom: (window.innerHeight || document.documentElement.clientHeight),
+                right: (window.innerWidth || document.documentElement.clientWidth)
+            }
+        }        
         
-        const outsideBottom: number = (props.top + rect.bottom) - (window.innerHeight || document.documentElement.clientHeight)
-        const outsideRight: number = (props.left + rect.right) - (window.innerWidth || document.documentElement.clientWidth)
+        const outsideBottom: number = (props.top + rect.bottom) - container.bottom
+        const outsideRight: number = (props.left + rect.right) - container.right
     
         let xOffset: number = 0
         let yOffset: number = 0
