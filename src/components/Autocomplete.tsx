@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react'
+import React, { FunctionComponent, useEffect } from 'react'
 import { Paper, List, ListItem } from '@mui/material'
 import { createStyles, withStyles, WithStyles } from '@mui/styles'
 
