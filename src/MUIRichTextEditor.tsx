@@ -91,6 +91,7 @@ export type TMUIRichTextEditorProps = {
     keyCommands?: TKeyCommand[]
     maxLength?: number
     autocomplete?: TAutocomplete
+    parentContainer?: string
     onSave?: (data: string) => void
     onChange?: (state: EditorState) => void
     onFocus?: () => void
@@ -1110,6 +1111,7 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
                         lineHeight={lineHeight}
                         onClick={handleAutocompleteSelected}
                         selectedIndex={selectedIndex}
+                        parentContainer={props.parentContainer}
                     />
                     : null}
                 {props.inlineToolbar && editable && state.toolbarPosition ?
