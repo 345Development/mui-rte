@@ -892,7 +892,7 @@ var MUIRichTextEditor = function (props, ref) {
                 _b[classes.inheritFontSize] = props.inheritFontSize,
                 _b)) },
             props.autocomplete && autocompletePositionRef.current ?
-                react_1.default.createElement(Autocomplete_1.default, { items: getAutocompleteItems(), top: autocompletePositionRef.current.top, left: autocompletePositionRef.current.left, lineHeight: lineHeight, onClick: handleAutocompleteSelected, selectedIndex: selectedIndex })
+                react_1.default.createElement(Autocomplete_1.default, { items: getAutocompleteItems(), top: autocompletePositionRef.current.top, left: autocompletePositionRef.current.left, lineHeight: lineHeight, onClick: handleAutocompleteSelected, selectedIndex: selectedIndex, parentContainer: props.parentContainer })
                 : null,
             props.inlineToolbar && editable && state.toolbarPosition ?
                 react_1.default.createElement(material_1.Paper, { className: classes.inlineToolbar, style: {

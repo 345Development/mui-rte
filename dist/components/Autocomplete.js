@@ -42,8 +42,19 @@ var Autocomplete = function (props) {
         if (!el)
             return;
         var rect = el.getBoundingClientRect();
-        var outsideBottom = (props.top + rect.bottom) - (window.innerHeight || document.documentElement.clientHeight);
-        var outsideRight = (props.left + rect.right) - (window.innerWidth || document.documentElement.clientWidth);
+        var containerEl = (props === null || props === void 0 ? void 0 : props.parentContainer) && document.getElementById(props.parentContainer);
+        var container = { bottom: 0, right: 0 };
+        if (containerEl) {
+            container = containerEl.getBoundingClientRect();
+        }
+        else {
+            container = {
+                bottom: (window.innerHeight || document.documentElement.clientHeight),
+                right: (window.innerWidth || document.documentElement.clientWidth)
+            };
+        }
+        var outsideBottom = (props.top + rect.bottom) - container.bottom;
+        var outsideRight = (props.left + rect.right) - container.right;
         var xOffset = 0;
         var yOffset = 0;
         if (outsideBottom > 0)
