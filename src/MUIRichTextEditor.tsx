@@ -277,6 +277,7 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
         start: 0,
         end: 0
     })
+    const editorScrollRef = useRef<any>(null)
 
     /**
      * Exposed methods
@@ -397,9 +398,9 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
         const { editorRect, selectionRect } = getEditorBounds(editor)
         const line = getLineNumber(editorState)
         const top = selectionRect ? selectionRect.top : editorRect.top + (lineHeight * line)
-        const left = selectionRect ? selectionRect.left : editorRect.left
+        const left = selectionRect?.left ? selectionRect.left : editorRect.left
         const position = {
-            top: editor.offsetTop + (top - editorRect.top) + lineHeight,
+            top: editor.offsetTop + (top - editorRect.top) + lineHeight - editorScrollRef?.current?.scrollTop || 0,
             left: editor.offsetLeft + (left - editorRect.left)
         }
         if (!autocompleteSelectionStateRef.current) {
@@ -471,15 +472,20 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
     const handleAutocompleteClosed = () => {
         clearSearch()
         setSelectedIndex(0)
-        refocus()
+        // refocus()
     }
 
     const getAutocompleteItems = (): TAutocompleteItem[] => {
         if (searchTerm.length < autocompleteMinSearchCharCount) {
             return []
         }
-        if (autocompleteRef.current!.itemsCallback) {
-            return autocompleteRef.current!.itemsCallback(searchTerm)
+
+        if (!autocompleteRef.current) {
+            return []
+        }
+
+        if (autocompleteRef.current?.itemsCallback) {
+            return autocompleteRef.current?.itemsCallback(searchTerm)
         }
 
         return autocompleteRef.current!.items
@@ -492,6 +498,9 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
     }
 
     const handleBeforeInput = (chars: string, editorState: EditorState): DraftHandleValue => {
+        // TODO: bug where if you select all text then delete during an autocomplete search
+        // autocompleteSelectionStateRef isn't cleared
+
         if (chars === " " && searchTerm.length) {
             clearSearch()
         } else if (autocompleteSelectionStateRef.current) {
@@ -1126,7 +1135,7 @@ const MUIRichTextEditor: ForwardRefRenderFunction<TMUIRichTextEditorRef, IMUIRic
                     />
                     : null}
                 {placeholder}
-                <div id={`${editorId}-editor`} className={classes.editor}>
+                <div ref={editorScrollRef} id={`${editorId}-editor`} className={classes.editor}>
                     <div id={`${editorId}-editor-container`} className={classNames(className, classes.editorContainer, {
                         [classes.editorReadOnly]: !editable,
                         [classes.error]: props.error

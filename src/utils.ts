@@ -93,6 +93,22 @@ const clearInlineStyles = (editorState: EditorState, customStyles?: DraftStyleMa
 
 const getEditorBounds = (editor: HTMLElement) => {
     let fakeClientRect = getVisibleSelectionRect(window)
+
+    if (!fakeClientRect) {
+        const selection:any = window?.getSelection()
+        let top: number | null = selection?.baseNode?.getBoundingClientRect?.()?.top
+        if (top) {
+            fakeClientRect = {
+                top: top,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: 0,
+                height: 0
+            }
+        }
+    }
+
     return {
         selectionRect: fakeClientRect ? {
             top: fakeClientRect?.top,
