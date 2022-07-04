@@ -112,14 +112,17 @@ const Autocomplete = () => {
             autocomplete={{
                 strategies: [
                     {
+                        type: "EMOJI",
                         items: emojis,
                         triggerChar: ":"
                     },
                     {
+                        type: "CITY",
                         items: cities,
                         triggerChar: "/"
                     },
                     {
+                        type: "STAFF",
                         items: staff,
                         triggerChar: "@",
                         insertSpaceAfter: false
