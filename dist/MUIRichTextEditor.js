@@ -291,7 +291,7 @@ var MUIRichTextEditor = function (props, ref) {
         var top = selectionRect ? selectionRect.top : editorRect.top + (lineHeight * line);
         var left = (selectionRect === null || selectionRect === void 0 ? void 0 : selectionRect.left) ? selectionRect.left : editorRect.left;
         var position = {
-            top: editor.offsetTop + (top - editorRect.top) + lineHeight - ((_b = editorScrollRef === null || editorScrollRef === void 0 ? void 0 : editorScrollRef.current) === null || _b === void 0 ? void 0 : _b.scrollTop) || 0,
+            top: editor.offsetTop + (top - editorRect.top) - ((_b = editorScrollRef === null || editorScrollRef === void 0 ? void 0 : editorScrollRef.current) === null || _b === void 0 ? void 0 : _b.scrollTop) || 0,
             left: editor.offsetLeft + (left - editorRect.left)
         };
         if (!autocompleteSelectionStateRef.current) {
@@ -313,12 +313,14 @@ var MUIRichTextEditor = function (props, ref) {
         });
         handleChange(withAtomicBlock);
     };
-    var insertAutocompleteSuggestionAsText = function (selection, value) {
+    var insertAutocompleteSuggestionAsText = function (selection, item) {
+        var _a;
+        var value = item.value;
         if (autocompleteRef.current.keepTriggerChar) {
             value = autocompleteRef.current.triggerChar + value;
         }
         var currentContentState = editorState.getCurrentContent();
-        var entityKey = currentContentState.createEntity("AC_ITEM", 'IMMUTABLE').getLastCreatedEntityKey();
+        var entityKey = currentContentState.createEntity((_a = autocompleteRef.current.type) !== null && _a !== void 0 ? _a : "AC_ITEM", 'IMMUTABLE', item.data || {}).getLastCreatedEntityKey();
         var contentState = draft_js_1.Modifier.replaceText(editorStateRef.current.getCurrentContent(), selection, value, editorStateRef.current.getCurrentInlineStyle(), entityKey);
         var newEditorState = draft_js_1.EditorState.push(editorStateRef.current, contentState, "insert-characters");
         if (autocompleteRef.current.insertSpaceAfter === false) {
@@ -344,7 +346,7 @@ var MUIRichTextEditor = function (props, ref) {
                 insertAutocompleteSuggestionAsAtomicBlock(name_1, newSelection, item.value);
             }
             else {
-                insertAutocompleteSuggestionAsText(newSelection, item.value);
+                insertAutocompleteSuggestionAsText(newSelection, item);
             }
         }
         handleAutocompleteClosed();
@@ -890,7 +892,7 @@ var MUIRichTextEditor = function (props, ref) {
                 _b[classes.inheritFontSize] = props.inheritFontSize,
                 _b)) },
             props.autocomplete && autocompletePositionRef.current ?
-                react_1.default.createElement(Autocomplete_1.default, { items: getAutocompleteItems(), top: autocompletePositionRef.current.top, left: autocompletePositionRef.current.left, onClick: handleAutocompleteSelected, selectedIndex: selectedIndex })
+                react_1.default.createElement(Autocomplete_1.default, { items: getAutocompleteItems(), top: autocompletePositionRef.current.top, left: autocompletePositionRef.current.left, lineHeight: lineHeight, onClick: handleAutocompleteSelected, selectedIndex: selectedIndex })
                 : null,
             props.inlineToolbar && editable && state.toolbarPosition ?
                 react_1.default.createElement(material_1.Paper, { className: classes.inlineToolbar, style: {
