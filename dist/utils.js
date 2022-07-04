@@ -71,7 +71,22 @@ var clearInlineStyles = function (editorState, customStyles) {
 };
 exports.clearInlineStyles = clearInlineStyles;
 var getEditorBounds = function (editor) {
+    var _a, _b, _c;
     var fakeClientRect = (0, draft_js_1.getVisibleSelectionRect)(window);
+    if (!fakeClientRect) {
+        var selection = window === null || window === void 0 ? void 0 : window.getSelection();
+        var top_1 = (_c = (_b = (_a = selection === null || selection === void 0 ? void 0 : selection.baseNode) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect) === null || _b === void 0 ? void 0 : _b.call(_a)) === null || _c === void 0 ? void 0 : _c.top;
+        if (top_1) {
+            fakeClientRect = {
+                top: top_1,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: 0,
+                height: 0
+            };
+        }
+    }
     return {
         selectionRect: fakeClientRect ? {
             top: fakeClientRect === null || fakeClientRect === void 0 ? void 0 : fakeClientRect.top,

@@ -183,6 +183,7 @@ var MUIRichTextEditor = function (props, ref) {
         start: 0,
         end: 0
     });
+    var editorScrollRef = (0, react_1.useRef)(null);
     /**
      * Exposed methods
      */
@@ -280,17 +281,17 @@ var MUIRichTextEditor = function (props, ref) {
         return undefined;
     };
     var updateAutocompletePosition = function () {
-        var _a;
+        var _a, _b;
         var editor = (_a = editorRef.current) === null || _a === void 0 ? void 0 : _a.editor;
         if (!editor) {
             return;
         }
-        var _b = (0, utils_1.getEditorBounds)(editor), editorRect = _b.editorRect, selectionRect = _b.selectionRect;
+        var _c = (0, utils_1.getEditorBounds)(editor), editorRect = _c.editorRect, selectionRect = _c.selectionRect;
         var line = (0, utils_1.getLineNumber)(editorState);
         var top = selectionRect ? selectionRect.top : editorRect.top + (lineHeight * line);
-        var left = selectionRect ? selectionRect.left : editorRect.left;
+        var left = (selectionRect === null || selectionRect === void 0 ? void 0 : selectionRect.left) ? selectionRect.left : editorRect.left;
         var position = {
-            top: editor.offsetTop + (top - editorRect.top) + lineHeight,
+            top: editor.offsetTop + (top - editorRect.top) + lineHeight - ((_b = editorScrollRef === null || editorScrollRef === void 0 ? void 0 : editorScrollRef.current) === null || _b === void 0 ? void 0 : _b.scrollTop) || 0,
             left: editor.offsetLeft + (left - editorRect.left)
         };
         if (!autocompleteSelectionStateRef.current) {
@@ -351,14 +352,18 @@ var MUIRichTextEditor = function (props, ref) {
     var handleAutocompleteClosed = function () {
         clearSearch();
         setSelectedIndex(0);
-        refocus();
+        // refocus()
     };
     var getAutocompleteItems = function () {
+        var _a, _b;
         if (searchTerm.length < autocompleteMinSearchCharCount) {
             return [];
         }
-        if (autocompleteRef.current.itemsCallback) {
-            return autocompleteRef.current.itemsCallback(searchTerm);
+        if (!autocompleteRef.current) {
+            return [];
+        }
+        if ((_a = autocompleteRef.current) === null || _a === void 0 ? void 0 : _a.itemsCallback) {
+            return (_b = autocompleteRef.current) === null || _b === void 0 ? void 0 : _b.itemsCallback(searchTerm);
         }
         return autocompleteRef.current.items
             .filter(function (item) { return (item.keys.filter(function (key) { return key.includes(searchTerm); }).length > 0); })
@@ -368,6 +373,8 @@ var MUIRichTextEditor = function (props, ref) {
         setEditorState(state);
     };
     var handleBeforeInput = function (chars, editorState) {
+        // TODO: bug where if you select all text then delete during an autocomplete search
+        // autocompleteSelectionStateRef isn't cleared
         if (chars === " " && searchTerm.length) {
             clearSearch();
         }
@@ -896,7 +903,7 @@ var MUIRichTextEditor = function (props, ref) {
                 react_1.default.createElement(Toolbar_1.default, { id: editorId, editorState: editorState, onClick: handleToolbarClick, controls: controls, customControls: customControls, className: classes.toolbar, disabled: !editable, size: props.toolbarButtonSize, isActive: focus })
                 : null,
             placeholder,
-            react_1.default.createElement("div", { id: editorId + "-editor", className: classes.editor },
+            react_1.default.createElement("div", { ref: editorScrollRef, id: editorId + "-editor", className: classes.editor },
                 react_1.default.createElement("div", { id: editorId + "-editor-container", className: (0, classnames_1.default)(className, classes.editorContainer, (_c = {},
                         _c[classes.editorReadOnly] = !editable,
                         _c[classes.error] = props.error,
